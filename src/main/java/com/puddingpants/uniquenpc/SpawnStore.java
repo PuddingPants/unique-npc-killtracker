@@ -19,7 +19,8 @@ public class SpawnStore
     private static final Type TYPE =
             new TypeToken<Map<Long, SpawnRecord>>() {}.getType();
 
-    private final Gson gson = new Gson();
+    @Inject
+    private Gson gson;
 
     @Inject
     private ConfigManager configManager;
