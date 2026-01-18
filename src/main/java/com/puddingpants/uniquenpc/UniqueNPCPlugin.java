@@ -53,7 +53,6 @@ public class UniqueNPCPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		manager.reloadConfig();
 		Map<Long, SpawnRecord> loadedSpawns = spawnStore.load();
 		manager.loadKnownSpawns(loadedSpawns);
 		manager.resetRuntimeState();
@@ -190,8 +189,6 @@ public class UniqueNPCPlugin extends Plugin
 			log.info("Reset complete - all spawn data cleared");
 			return;
 		}
-
-		manager.reloadConfig();
 		npcsPreviouslyHidden.clear();
 		updateNpcVisibility();
 	}
