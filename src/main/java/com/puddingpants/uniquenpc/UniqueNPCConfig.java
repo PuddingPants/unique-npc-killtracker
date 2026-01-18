@@ -77,14 +77,4 @@ public interface UniqueNPCConfig extends Config
 	{
 		return false;
 	}
-
-	@ConfigItem(
-			keyName = "npcMatchRadiusOverrides",
-			name = "NPC Match Radius Overrides",
-			description = "Override match radius per NPC ID. Format: npcId=radius,npcId=radius"
-	)
-	default String npcMatchRadiusOverrides()
-	{
-		return "";
-	}
 }
