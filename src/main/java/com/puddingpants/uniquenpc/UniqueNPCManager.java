@@ -29,10 +29,9 @@ public class UniqueNPCManager
     private final Map<Integer, Long> playerDamagedNpc = new HashMap<>();
     private final Map<Integer, NPC> pendingSpawns = new HashMap<>();
 
-    // Config overrides
-    private final Map<Integer, Integer> npcMatchRadiusOverrides = new HashMap<>();
-
     private static final long PLAYER_DAMAGE_TTL_MS = 15_000;
+    private static final int SPECIAL_NPC_ID = 5007;
+    private static final int SPECIAL_NPC_RADIUS = 200;
 
     // -------------------------------------------------
     // Lifecycle
@@ -61,35 +60,6 @@ public class UniqueNPCManager
         boolean wasDirty = dirty;
         dirty = false;
         return wasDirty;
-    }
-
-    public void reloadConfig()
-    {
-        npcMatchRadiusOverrides.clear();
-
-        String raw = config.npcMatchRadiusOverrides();
-        if (raw == null || raw.trim().isEmpty())
-        {
-            return;
-        }
-
-        for (String entry : raw.split(","))
-        {
-            String[] parts = entry.split("=");
-            if (parts.length == 2)
-            {
-                try
-                {
-                    int npcId = Integer.parseInt(parts[0].trim());
-                    int radius = Integer.parseInt(parts[1].trim());
-                    if (radius > 0)
-                    {
-                        npcMatchRadiusOverrides.put(npcId, radius);
-                    }
-                }
-                catch (NumberFormatException ignored) {}
-            }
-        }
     }
 
     // -------------------------------------------------
@@ -155,7 +125,7 @@ public class UniqueNPCManager
             if (entityToUniqueId.containsKey(index)) continue;
 
             SpawnRecord best = findBestMatch(npc);
-            int radius = npcMatchRadiusOverrides.getOrDefault(npc.getId(), config.matchRadius());
+            int radius = getMatchRadius(npc.getId());
 
             if (best != null && best.location.distanceTo(npc.getWorldLocation()) <= radius)
             {
@@ -167,6 +137,15 @@ public class UniqueNPCManager
         pendingSpawns.clear();
     }
 
+    private int getMatchRadius(int npcId)
+    {
+        if (npcId == SPECIAL_NPC_ID)
+        {
+            return SPECIAL_NPC_RADIUS;
+        }
+        return config.matchRadius();
+    }
+    
     private SpawnRecord findBestMatch(NPC npc)
     {
         WorldPoint loc = npc.getWorldLocation();
